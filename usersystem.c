@@ -9,6 +9,7 @@ void login();
 void login_checking(char l_email[30],char l_pass[20]);
 int size_of_charArray(char arr[30]);
 int compare_two_char_array(char first[30],char second[30]);
+void my_privilege(int uId);
 
 // globe variables
 int gUserCount = 0;
@@ -16,10 +17,13 @@ int gLoginCheck = -1;
 
 //structure declare
 struct Db{
+    int uId;
     char userName[30];
     char email[30];
     char pass[30];
     int phoneNumber;
+    char address[30];
+    int postalCode;
 };
 
 struct Db data[10];
@@ -46,6 +50,7 @@ void menu(){
         }else if(option == 3){
             exit(1);
         }else{
+            printf("choose from the provided options only\n");
             continue;
         }
     }
@@ -63,11 +68,16 @@ void login(){
     login_checking(lEmail, lPass);
     if(gLoginCheck != -1){
         printf("\nLogin Success Welcome!\n");
-        menu();
+        my_privilege(gLoginCheck);
     }else{
         printf("\nLogin Failed Try Again!\n");
         menu();
     }
+}
+
+void my_privilege(int uId){
+    printf("Welcome Sir: %s\n", data[uId].userName);
+    printf("Your PhoneNumber: %d\n", data[uId].phoneNumber);
 }
 
 void login_checking(char email[30], char pass[30]){
@@ -76,12 +86,11 @@ void login_checking(char email[30], char pass[30]){
 
     for(i = 0; i < gUserCount; i++){
         int emailCheck = compare_two_char_array(data[i].email, email);
-        printf("correct");
         if(emailCheck == 1){
             int passCheck = compare_two_char_array(data[i].pass, pass);
             if(passCheck == 1){
-                printf("correct");
-                gLoginCheck = i;
+                printf("\n Email And Password correct");
+                gLoginCheck = data[i].uId;
                 break;
             }
         }
@@ -92,7 +101,9 @@ void registration(){
     char username[30];
     char email[30];
     char password[30];
-    int phoneNumber;
+    int phoneNumber = 0;
+    char address[30];
+    int postalCode = 0;
 
     printf("Welcome from Registration\n");
     printf("Enter Username:");
@@ -103,6 +114,10 @@ void registration(){
     scanf(" %[^\n]", &password);
     printf("Enter phoneNumber:");
     scanf("%d", &phoneNumber);
+    printf("Enter address:");
+    scanf(" %[^\n]", &address);
+    printf("Enter postal Code:");
+    scanf("%d", &postalCode);
 
     copy_two_charArray(data[gUserCount].userName, username);
     printf("\nChecking for username: %s",data[gUserCount].userName);
@@ -112,7 +127,12 @@ void registration(){
     printf("\nChecking for password: %s",data[gUserCount].pass);
     data[gUserCount].phoneNumber = phoneNumber;
     printf("\nChecking for phoneNumber: %d",data[gUserCount].phoneNumber);
+    copy_two_charArray(data[gUserCount].address, address);
+    printf("\nChecking for address: %s",data[gUserCount].address);
+    data[gUserCount].postalCode = postalCode;
+    printf("\nChecking for phoneNumber: %d",data[gUserCount].postalCode);
 
+    data[gUserCount].uId = gUserCount;
     gUserCount++;
 }
 
