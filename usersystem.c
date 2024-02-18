@@ -10,6 +10,7 @@ void login_checking(char l_email[30],char l_pass[20]);
 int size_of_charArray(char arr[30]);
 int compare_two_char_array(char first[30],char second[30]);
 void my_privilege(int uId);
+void user_info_change(int uId);
 
 // globe variables
 int gUserCount = 0;
@@ -76,8 +77,99 @@ void login(){
 }
 
 void my_privilege(int uId){
+
+    int mOption = -1;
     printf("Welcome Sir: %s\n", data[uId].userName);
     printf("Your PhoneNumber: %d\n", data[uId].phoneNumber);
+
+    printf("What you want to do!\n");
+    printf("Enter 0 To  Exit:\nEnter 1 to Menu:\nEnter 2 to change user info:");
+    if(mOption == 0){
+        exit(1);
+    }else if(mOption == 1){
+        menu();
+    }else if(mOption == 2){
+        user_info_change(uId);
+    }else{
+        printf("choose from the provided options only\n");
+        my_privilege(uId);
+    }
+}
+
+void user_info_change(int uId){
+    int cOption=0;
+    printf("Press 1: To change Name:\nPress 2: To change Email:\n");
+    printf("Press 3: To change Password:\nPress 4: To change PhoneNumber:\n");
+    printf("Press 5: To change Address:\nPress 6: To change PostCode:\n");
+    printf("Press 7: For your privilege:");
+    scanf("%d",&cOption);
+
+    switch (cOption) {
+        case 1: {
+            char newUserName[30];
+            printf("To Change username: \n");
+            printf("This is your user name: %s\n", data[uId].userName);
+            printf("Enter your new user name:");
+            scanf(" %[^\n]", newUserName);
+            copy_two_charArray(data[uId].userName, newUserName);
+            printf("This is your new user name: %s", data[uId].userName);
+            break;
+        }
+        case 2: {
+            char newEmail[30];
+            printf("To Change email: \n");
+            printf("This is your email: %s\n", data[uId].email);
+            printf("Enter your new email:");
+            scanf(" %[^\n]", newEmail);
+            copy_two_charArray(data[uId].email, newEmail);
+            printf("This is your new email: %s", data[uId].email);
+            break;
+        }
+        case 3: {
+            char newPassword[30];
+            printf("To Change password: \n");
+            printf("Enter your new password:");
+            scanf(" %[^\n]", newPassword);
+            copy_two_charArray(data[uId].pass, newPassword);
+            printf("Password changed successfully.");
+            break;
+        }
+        case 4: {
+            int newPhoneNumber;
+            printf("To Change phone number: \n");
+            printf("Enter your new phone number:");
+            scanf("%d", &newPhoneNumber);
+            data[uId].phoneNumber = newPhoneNumber;
+            printf("Phone number changed successfully.");
+            break;
+        }
+        case 5: {
+            char newAddress[30];
+            printf("To Change address: \n");
+            printf("Enter your new address:");
+            scanf(" %[^\n]", newAddress);
+            copy_two_charArray(data[uId].address, newAddress);
+            printf("Address changed successfully.");
+            break;
+        }
+        case 6: {
+            int newPostalCode;
+            printf("To Change postal code: \n");
+            printf("Enter your new postal code:");
+            scanf("%d", &newPostalCode);
+            data[uId].postalCode = newPostalCode;
+            printf("Postal code changed successfully.");
+            break;
+        }
+        case 7: {
+            printf("Privilege changed successfully.");
+            my_privilege(uId);
+            break;
+        }
+        default:
+            printf("Invalid option!\n");
+            user_info_change(uId);
+    }
 }
 
 void login_checking(char email[30], char pass[30]){
