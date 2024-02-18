@@ -11,10 +11,13 @@ int size_of_charArray(char arr[30]);
 int compare_two_char_array(char first[30],char second[30]);
 void my_privilege(int uId);
 void user_info_change(int uId);
+int email_scanner(char to_check_email[30]);
+void email_valid(char to_valid_email[30]);
 
 // globe variables
 int gUserCount = 0;
 int gLoginCheck = -1;
+int emailValidation = -1;
 
 //structure declare
 struct Db{
@@ -200,8 +203,20 @@ void registration(){
     printf("Welcome from Registration\n");
     printf("Enter Username:");
     scanf(" %[^\n]", &username);
-    printf("Enter email:");
-    scanf(" %[^\n]", &email);
+
+    //check email exist or not
+    int email_exist = -1;
+
+    while(email_exist == -1){
+        printf("Enter email:");
+        scanf(" %[^\n]", &email);
+        email_exist = email_scanner(email);
+        if(email_exist==-1){
+            printf("Your email already registered! %s\n",email);
+            printf("Enter your new email address!\n");
+        }
+    }
+
     printf("Enter password:");
     scanf(" %[^\n]", &password);
     printf("Enter phoneNumber:");
@@ -271,4 +286,20 @@ int size_of_charArray(char arr[30]){
     }
 
     return size;
+}
+
+int email_scanner(char email[30]){
+    int isExist = -1;
+    if(gUserCount == 0){
+        return 1;
+    }else{
+        for(int i = 0; i < gUserCount; i++){
+            isExist = compare_two_char_array(data[i].email, email);
+            if(isExist == 1){
+                return -1; //is already register
+            }
+        }
+    }
+
+    return 1; //you can register
 }
