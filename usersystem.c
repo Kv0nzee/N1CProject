@@ -13,6 +13,8 @@ void my_privilege(int uId);
 void user_info_change(int uId);
 int email_scanner(char email[30]);
 void email_valid(char email[30]);
+void record_data();
+void retrieve_data();
 
 // globe variables
 int gUserCount = 0;
@@ -247,6 +249,9 @@ void registration(){
 
     data[gUserCount].uId = gUserCount;
     gUserCount++;
+    record_data();
+    retrieve_data();
+    exit(EXIT_SUCCESS);
 }
 
 void copy_two_charArray(char first[30],char second[30]){
@@ -381,5 +386,32 @@ void email_valid(char email[30]){
         printf("Second email validatino failed!\n");
         emailValidation=-1;
     }
+}
+
+void record_data(){
+    FILE *fptr = fopen("database.txt", "a");
+
+    if(!fptr){
+        perror("Cant Find file");
+    }
+
+    printf("Recording data... to File!");
+    for(int i = 0; i < gUserCount; i++){
+        fwrite(&data[i], sizeof(Db), 1, fptr);
+    }
+
+    fclose(fptr);
+    printf("Success!\n");
+
+}
+
+void retrieve_data(){
+    FILE *fptr = fopen("database.txt", r);
+    if(fptr==NULL){
+        perror("Error\n");
+    }
+
+    fread(&data[i], sizeof(Db), 1, fptr);
+    printf("MyRecord ID: %d , Score: %s\n",data[1].uId,data[1].userName);
 
 }
