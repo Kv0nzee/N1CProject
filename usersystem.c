@@ -21,6 +21,10 @@ void admin_sector(int id);
 
 void loading_data_from_file();
 void all_data();
+void to_transfer_checking(int id);
+int to_check_phone(int phone);
+void transaction(int sender_id , int receiver_id,double amount);
+void transaction_record(int sender_id , int receiver_id,double amount);
 
 // globe variables
 int gUserCount = 0;
@@ -28,6 +32,10 @@ int gLoginCheck = -1;
 int emailValidation = -1;
 
 //structure declare
+struct to_record{
+    char transRecord[200];
+};
+
 struct Db{
     int uId;
     char userName[30];
@@ -36,11 +44,15 @@ struct Db{
     int phoneNumber;
     char address[30];
     int postalCode;
+    double amount;
+    struct to_record trans[100];
 };
 
 struct Db data[USERSIZE];
 
 int main(){
+
+    transaction_record(1,1, 1000);
 
     loading_data_from_file();
     all_data();
@@ -102,18 +114,71 @@ void my_privilege(int uId){
         printf("Your PhoneNumber: %d\n", data[uId].phoneNumber);
 
         printf("What you want to do!\n");
-        printf("Enter 0 To  Exit:\nEnter 1 to Menu:\nEnter 2 to change user info:");
+        printf("Enter 0 To  Exit:\nEnter 1 to Menu:\nEnter 2 to change user info:\n Enter 3 To transfer money:");
         if (mOption == 0) {
             exit(1);
         } else if (mOption == 1) {
             menu();
         } else if (mOption == 2) {
             user_info_change(uId);
+        }else if(mOption==3){
+            to_transfer_checking(uId);
         } else {
             printf("choose from the provided options only\n");
             my_privilege(uId);
         }
     }
+}
+
+void to_transfer_checking(int id){
+    double amount = 0;
+    int recieverPhoneNumber = 0;
+    int phoneId = 0;
+    int option = 0;
+    int coutWrong = 0;
+    printf("Enter you amount to transfer: ");
+    scanf("%lf", &amount);
+
+    while(data[id].amount > amount + 100){
+        printf("Enter receiver phone number to send money:");
+        scanf("%d",&recieverPhoneNumber);
+        phoneId = to_check_phone(recieverPhoneNumber);
+        if(phoneId != -1){
+            transaction(id, phoneId, amount);
+        } else{
+            printf("This phone number is not available in our system!\n");
+            coutWrong++;
+            if(coutWrong>2){
+                fprintf(stderr,"Wrong Phone Number!");
+                my_privilege(id);
+            }
+        }
+    }
+
+    printf("Insufficient Amount: %lf\n",data[id].amount);
+    printf("Press 1 to continue transaction:\nPress 2 To get Privilege:\n");
+    scanf("%d",&option);
+    if(option==1){
+        to_transfer_checking(id);
+    } else if(option==2){
+        my_privilege(id);
+    } else{
+        fprintf(stderr,"Invalid Option\n");
+        menu();
+    }
+}
+
+int to_check_phone(int phone){
+
+    for(int p=0; p<gUserCount; p++){
+
+        if(data[p].phoneNumber==phone){
+            return data[p].uId;
+        }
+
+    }
+
+    return -1;
 }
 
 void admin_sector(int id){
@@ -271,6 +336,7 @@ void registration(){
     data[gUserCount].postalCode = postalCode;
     printf("\nChecking for phoneNumber: %d",data[gUserCount].postalCode);
 
+    data[gUserCount].amount = 1000;
     data[gUserCount].uId = gUserCount;
     gUserCount++;
     exit(EXIT_SUCCESS);
@@ -456,6 +522,33 @@ void all_data(){
     }
 
 }
+
+void transaction(int sender_id , int receiver_id,double amount){
+
+    data[sender_id].amount = data[sender_id].amount - amount;
+    data[receiver_id].amount = data[receiver_id].amount + amount;
+    printf("Transaction Complete From %s to %s : amount=%lf\n",data[sender_id].userName,data[receiver_id].userName,amount);
+    transaction_record(sender_id , receiver_id,amount);
+    all_data();
+    my_privilege(sender_id);
+
+}
+
+void transaction_record(int sender_id , int receiver_id,double amount){
+
+    char *from="From-";
+    //char *sender = data[sender_id].user_name;
+    char *sender = data[sender_id].userName;
+    char *to="-To-";
+    char *receiver= data[receiver_id].userName;
+//    char *receiver= "ASM";
+
+    sprintf((char *) data[0].trans, "%s%s%s%s%d", from, sender, to, receiver,1000);
+
+    printf("all data %s\n",data[0].trans);
+    printf("%c",data[0].trans[0].transRecord[0]);
+}
+
 
 //void retrieve_data(){
 //    FILE *fptr = fopen("database.txt", r);
