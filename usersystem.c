@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "stdlib.h"
+#define USERSIZE 10
 
 // function declare
 void copy_two_charArray(char first[30],char second[30]);
@@ -15,6 +16,11 @@ int email_scanner(char email[30]);
 void email_valid(char email[30]);
 void record_data();
 void retrieve_data();
+
+void admin_sector(int id);
+
+void loading_data_from_file();
+void all_data();
 
 // globe variables
 int gUserCount = 0;
@@ -32,10 +38,12 @@ struct Db{
     int postalCode;
 };
 
-struct Db data[10];
+struct Db data[USERSIZE];
 
 int main(){
 
+    loading_data_from_file();
+    all_data();
     menu();
 
     return 0;
@@ -54,6 +62,9 @@ void menu(){
         }else if(option == 2){
             registration();
         }else if(option == 3){
+            all_data();
+            record_data();
+            printf("\n\n__________Data Recording Complete!___________\n");
             exit(1);
         }else{
             printf("choose from the provided options only\n");
@@ -84,22 +95,35 @@ void login(){
 void my_privilege(int uId){
 
     int mOption = -1;
-    printf("Welcome Sir: %s\n", data[uId].userName);
-    printf("Your PhoneNumber: %d\n", data[uId].phoneNumber);
+    if(data[uId].uId<3){
+        admin_sector(uId);
+    }else {
+        printf("Welcome Sir: %s\n", data[uId].userName);
+        printf("Your PhoneNumber: %d\n", data[uId].phoneNumber);
 
-    printf("What you want to do!\n");
-    printf("Enter 0 To  Exit:\nEnter 1 to Menu:\nEnter 2 to change user info:");
-    if(mOption == 0){
-        exit(1);
-    }else if(mOption == 1){
-        menu();
-    }else if(mOption == 2){
-        user_info_change(uId);
-    }else{
-        printf("choose from the provided options only\n");
-        my_privilege(uId);
+        printf("What you want to do!\n");
+        printf("Enter 0 To  Exit:\nEnter 1 to Menu:\nEnter 2 to change user info:");
+        if (mOption == 0) {
+            exit(1);
+        } else if (mOption == 1) {
+            menu();
+        } else if (mOption == 2) {
+            user_info_change(uId);
+        } else {
+            printf("choose from the provided options only\n");
+            my_privilege(uId);
+        }
     }
 }
+
+void admin_sector(int id){
+
+    printf("This is from Admin : %s\nAdmin ID:%d\n",data[id].userName,id);
+
+
+
+}
+
 
 void user_info_change(int uId){
     int cOption=0;
@@ -249,8 +273,6 @@ void registration(){
 
     data[gUserCount].uId = gUserCount;
     gUserCount++;
-    record_data();
-    retrieve_data();
     exit(EXIT_SUCCESS);
 }
 
@@ -395,8 +417,11 @@ void record_data(){
         perror("Cant Find file");
     }
 
-    printf("Recording data... to File!");
+    printf("Recording data to File!");
     for(int i = 0; i < gUserCount; i++){
+        data[i].uId = i;
+        fprintf(fptr,"%d%c%s%c%s%c%s%c%d%c%s%c%d%c",data[i].uId,' ',data[i].userName,' ',
+                data[i].email,' ',data[i].pass,' ',data[i].phoneNumber,' ',data[i].address,' ',data[i].postalCode,'\n');
         fwrite(&data[i], sizeof(Db), 1, fptr);
     }
 
@@ -405,13 +430,40 @@ void record_data(){
 
 }
 
-void retrieve_data(){
-    FILE *fptr = fopen("database.txt", r);
-    if(fptr==NULL){
-        perror("Error\n");
+void loading_data_from_file(){
+    FILE *fptr = fopen("database.txt", "r");
+    if(!fptr){
+        perror("\n");
+        EXIT_FAILURE;
     }
 
-    fread(&data[i], sizeof(Db), 1, fptr);
-    printf("MyRecord ID: %d , Score: %s\n",data[1].uId,data[1].userName);
+    for(int z=0; z<USERSIZE; z++){
+        fscanf(fptr, "%d%s%s%s%d%s%d%lf",
+               &data[z].uId, &data[z].userName, &data[z].email, &data[z].pass,
+               &data[z].phoneNumber, &data[z].address, &data[z].postalCode);
+
+        if(data[z].phoneNumber==0){
+            break;
+        }
+        gUserCount++;
+    }
+}
+
+void all_data(){
+    printf("\nusers: %d\n",gUserCount);
+    for(int z=0; z<gUserCount;z++){
+        printf("%d%c%s%c%s%c%s%c%d%c%s%c%d\n",data[z].uId,'-',data[z].userName,'-',data[z].email,'-',data[z].pass,'-',data[z].phoneNumber,'-',data[z].address,'-',data[z].postalCode);
+    }
 
 }
+
+//void retrieve_data(){
+//    FILE *fptr = fopen("database.txt", r);
+//    if(fptr==NULL){
+//        perror("Error\n");
+//    }
+//
+//    fread(&data[i], sizeof(Db), 1, fptr);
+//    printf("MyRecord ID: %d , Score: %s\n",data[1].uId,data[1].userName);
+//
+//}
