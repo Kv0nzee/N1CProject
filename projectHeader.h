@@ -1,3 +1,10 @@
+//
+// Created by ASUS ZenBook on 2/25/2024.
+//
+
+#ifndef C_PROGRAMMING_PROJECTHEADER_H
+#define C_PROGRAMMING_PROJECTHEADER_H
+
 #include "stdio.h"
 #include "stdlib.h"
 #define USERSIZE 10
@@ -36,7 +43,7 @@ struct to_record{
     char transRecord[200];
 };
 
-struct Db{
+typedef struct {
     int uId;
     char userName[30];
     char email[30];
@@ -45,21 +52,11 @@ struct Db{
     char address[30];
     int postalCode;
     double amount;
+    int trans_counter;
     struct to_record trans[100];
-};
+}Db;
 
-struct Db data[USERSIZE];
-
-int main(){
-
-    transaction_record(1,1, 1000);
-
-    loading_data_from_file();
-    all_data();
-    menu();
-
-    return 0;
-}
+Db data[USERSIZE];
 
 void menu(){
     while(1){
@@ -127,44 +124,6 @@ void my_privilege(int uId){
             printf("choose from the provided options only\n");
             my_privilege(uId);
         }
-    }
-}
-
-void to_transfer_checking(int id){
-    double amount = 0;
-    int recieverPhoneNumber = 0;
-    int phoneId = 0;
-    int option = 0;
-    int coutWrong = 0;
-    printf("Enter you amount to transfer: ");
-    scanf("%lf", &amount);
-
-    while(data[id].amount > amount + 100){
-        printf("Enter receiver phone number to send money:");
-        scanf("%d",&recieverPhoneNumber);
-        phoneId = to_check_phone(recieverPhoneNumber);
-        if(phoneId != -1){
-            transaction(id, phoneId, amount);
-        } else{
-            printf("This phone number is not available in our system!\n");
-            coutWrong++;
-            if(coutWrong>2){
-                fprintf(stderr,"Wrong Phone Number!");
-                my_privilege(id);
-            }
-        }
-    }
-
-    printf("Insufficient Amount: %lf\n",data[id].amount);
-    printf("Press 1 to continue transaction:\nPress 2 To get Privilege:\n");
-    scanf("%d",&option);
-    if(option==1){
-        to_transfer_checking(id);
-    } else if(option==2){
-        my_privilege(id);
-    } else{
-        fprintf(stderr,"Invalid Option\n");
-        menu();
     }
 }
 
@@ -338,6 +297,7 @@ void registration(){
 
     data[gUserCount].amount = 1000;
     data[gUserCount].uId = gUserCount;
+    data[gUserCount].trans_counter = 0;
     gUserCount++;
     exit(EXIT_SUCCESS);
 }
@@ -403,78 +363,7 @@ int email_scanner(char email[30]){
     return 1; //you can register
 }
 
-void email_valid(char email[30]){
-    // number , small letter ယူမယ် ကျန်တာ အကုန် ဘန်း // num = 48-57 , small = 97-122
-    // to_valid_email[30] = {w,i,n,a,s,m,@,n,1,c,.,c,o,m};
-    int first_count=0;
-    char one_char;
-    char first_valid=0;
-    int arr_size =  size_of_charArray(email);
 
-    for (int i = 0; i < arr_size; ++i) {
-        if(email[i]=='@'){
-            break;
-        } else{
-            first_count++;
-        }
-    }
-    for(int x=0; x<first_count; x++){
-        one_char = email[x];
-        if((one_char>=48 && one_char<=57)||(one_char>=97 &&one_char<=122)){
-            first_valid++;
-        } else{
-            first_valid=-1;
-        }
-    }
-
-    if(first_count!=first_valid || first_count==arr_size || first_count==0){
-        emailValidation=-1;
-        return;
-    } else{
-        emailValidation=1;
-        printf("\n\n [+]First Part checking complete!\n");
-    }
-
-    printf("Arr Size: %d\n",arr_size);
-    printf("first_count %d\n",first_count);
-    printf("First count index value %c\n",email[first_count]);
-
-    // @gmail.com , @yahoo.com , @outlook.com , @apple.com , @n1c.com
-    char gmail[11]={'@','g','m','a','i','l','.','c','o','m'};
-    char yahoo[11]={'@','y','a','h','o','o','.','c','o','m'};
-    char outlook[12]={'@','o','u','t','l','o','o','k','.','c','o','m'};
-    char apple[11]={'@','a','p','p','l','e','.','c','o','m'};
-    char n1c[11]={'@','n','1','c','.','c','o','m'};
-    int second_count=0;
-    char arr_sec_part[13];
-    int for_sec_index=0;
-
-    second_count = arr_size-first_count;
-    printf("second count value : %d\n",second_count);
-    printf("Second Data :");
-    for(int xxx=first_count; xxx<arr_size; xxx++){
-        arr_sec_part[for_sec_index] = email[xxx];
-        printf("%c",arr_sec_part[for_sec_index]);
-        for_sec_index++;
-
-    }
-    printf("\n");
-
-    int g = compare_two_char_array(arr_sec_part,gmail);
-    int y = compare_two_char_array(arr_sec_part,yahoo);
-    int o = compare_two_char_array(arr_sec_part,outlook);
-    int a = compare_two_char_array(arr_sec_part,apple);
-    int n = compare_two_char_array(arr_sec_part,n1c);
-
-    if(g||y||o||a||n){
-        emailValidation=1;
-        printf("\n\n [+]Second Part checking complete!\n");
-
-    } else{
-        printf("Second email validatino failed!\n");
-        emailValidation=-1;
-    }
-}
 
 void record_data(){
     FILE *fptr = fopen("database.txt", "a");
@@ -486,9 +375,12 @@ void record_data(){
     printf("Recording data to File!");
     for(int i = 0; i < gUserCount; i++){
         data[i].uId = i;
-        fprintf(fptr,"%d%c%s%c%s%c%s%c%d%c%s%c%d%c",data[i].uId,' ',data[i].userName,' ',
-                data[i].email,' ',data[i].pass,' ',data[i].phoneNumber,' ',data[i].address,' ',data[i].postalCode,'\n');
-        fwrite(&data[i], sizeof(Db), 1, fptr);
+        fprintf(fptr,"%d%c%s%c%s%c%s%c%d%c%s%c%d%c%d",data[i].uId,' ',data[i].userName,' ',
+                data[i].email,' ',data[i].pass,' ',data[i].phoneNumber,' ',data[i].address,' ',data[i].postalCode,' ', data[i].trans_counter);
+        for(int a=0; a<data[i].trans_counter; a++){
+            fprintf(fptr,"%c%s",' ',data[i].trans[a].transRecord);
+        }
+        fprintf(fptr,"%c",'\n');
     }
 
     fclose(fptr);
@@ -504,10 +396,14 @@ void loading_data_from_file(){
     }
 
     for(int z=0; z<USERSIZE; z++){
-        fscanf(fptr, "%d%s%s%s%d%s%d%lf",
+        fscanf(fptr, "%d%s%s%s%d%s%d%lf%d",
                &data[z].uId, &data[z].userName, &data[z].email, &data[z].pass,
-               &data[z].phoneNumber, &data[z].address, &data[z].postalCode);
+               &data[z].phoneNumber, &data[z].address, &data[z].postalCode, &data[z].trans_counter);
+        int counter = data[z].trans_counter;
+        for(int a=0; a<counter; a++){
+            fscanf(fptr,"%s",&data[z].trans[a].transRecord);
 
+        }
         if(data[z].phoneNumber==0){
             break;
         }
@@ -518,37 +414,16 @@ void loading_data_from_file(){
 void all_data(){
     printf("\nusers: %d\n",gUserCount);
     for(int z=0; z<gUserCount;z++){
-        printf("%d%c%s%c%s%c%s%c%d%c%s%c%d\n",data[z].uId,'-',data[z].userName,'-',data[z].email,'-',data[z].pass,'-',data[z].phoneNumber,'-',data[z].address,'-',data[z].postalCode);
+        printf("%d%c%s%c%s%c%s%c%d%c%s%c%d%c%lf%c%d",data[z].uId,'-',data[z].userName,'-',data[z].email,'-',data[z].pass,'-',data[z].phoneNumber,'-',data[z].address,'-',data[z].postalCode,'-',data[z].amount,'-',data[z].trans_counter);
+
+        for(int a=0; a<data[z].trans_counter; a++){
+            printf("%c%s",'-',data[z].trans[a].transRecord);
+        }
+        printf("\n");
+
     }
 
 }
-
-void transaction(int sender_id , int receiver_id,double amount){
-
-    data[sender_id].amount = data[sender_id].amount - amount;
-    data[receiver_id].amount = data[receiver_id].amount + amount;
-    printf("Transaction Complete From %s to %s : amount=%lf\n",data[sender_id].userName,data[receiver_id].userName,amount);
-    transaction_record(sender_id , receiver_id,amount);
-    all_data();
-    my_privilege(sender_id);
-
-}
-
-void transaction_record(int sender_id , int receiver_id,double amount){
-
-    char *from="From-";
-    //char *sender = data[sender_id].user_name;
-    char *sender = data[sender_id].userName;
-    char *to="-To-";
-    char *receiver= data[receiver_id].userName;
-//    char *receiver= "ASM";
-
-    sprintf((char *) data[0].trans, "%s%s%s%s%d", from, sender, to, receiver,1000);
-
-    printf("all data %s\n",data[0].trans);
-    printf("%c",data[0].trans[0].transRecord[0]);
-}
-
 
 //void retrieve_data(){
 //    FILE *fptr = fopen("database.txt", r);
@@ -560,3 +435,4 @@ void transaction_record(int sender_id , int receiver_id,double amount){
 //    printf("MyRecord ID: %d , Score: %s\n",data[1].uId,data[1].userName);
 //
 //}
+#endif //C_PROGRAMMING_PROJECTHEADER_H
