@@ -102,18 +102,19 @@ void login(){
 }
 
 void my_privilege(int uId){
+    int mOption = 0;
 
-    int mOption = -1;
-    if(data[uId].uId<3){
-        admin_sector(uId);
-    }else {
+//    if(data[uId].uId<3){
+//        admin_sector(uId);
+//    }else {
         printf("Welcome Sir: %s\n", data[uId].userName);
         printf("Your PhoneNumber: %d\n", data[uId].phoneNumber);
 
         printf("What you want to do!\n");
         printf("Enter 0 To  Exit:\nEnter 1 to Menu:\nEnter 2 to change user info:\n Enter 3 To transfer money:");
+        scanf("%d", &mOption);
         if (mOption == 0) {
-            exit(1);
+            return;
         } else if (mOption == 1) {
             menu();
         } else if (mOption == 2) {
@@ -124,7 +125,7 @@ void my_privilege(int uId){
             printf("choose from the provided options only\n");
             my_privilege(uId);
         }
-    }
+//    }
 }
 
 int to_check_phone(int phone){
@@ -236,7 +237,6 @@ void login_checking(char email[30], char pass[30]){
             if(passCheck == 1){
                 printf("\n Email And Password correct");
                 gLoginCheck = data[i].uId;
-                break;
             }
         }
     }
@@ -299,7 +299,6 @@ void registration(){
     data[gUserCount].uId = gUserCount;
     data[gUserCount].trans_counter = 0;
     gUserCount++;
-    exit(EXIT_SUCCESS);
 }
 
 void copy_two_charArray(char first[30],char second[30]){
@@ -363,51 +362,50 @@ int email_scanner(char email[30]){
     return 1; //you can register
 }
 
-
-
 void record_data(){
-    FILE *fptr = fopen("database.txt", "a");
+    FILE *fptr = fopen("database.txt","w");
 
     if(!fptr){
-        perror("Cant Find file");
+        perror("Recording Data:\n");
     }
 
-    printf("Recording data to File!");
-    for(int i = 0; i < gUserCount; i++){
-        data[i].uId = i;
-        fprintf(fptr,"%d%c%s%c%s%c%s%c%d%c%s%c%d%c%d",data[i].uId,' ',data[i].userName,' ',
-                data[i].email,' ',data[i].pass,' ',data[i].phoneNumber,' ',data[i].address,' ',data[i].postalCode,' ', data[i].trans_counter);
+    printf("Recording Data to File.....\n");
+    for(int i=0; i<gUserCount; i++){
+        data[i].uId=i;
+        fprintf(fptr,"%d%c%s%c%s%c%s%c%d%c%s%c%d%c%lf%c%d",data[i].uId,' ',data[i].userName,' ',
+                data[i].email,' ',data[i].pass,' ',data[i].phoneNumber,' ',data[i].address,' ',data[i].postalCode,' ',data[i].amount,' ',data[i].trans_counter);
+
         for(int a=0; a<data[i].trans_counter; a++){
             fprintf(fptr,"%c%s",' ',data[i].trans[a].transRecord);
         }
         fprintf(fptr,"%c",'\n');
-    }
 
+    }
     fclose(fptr);
     printf("Success!\n");
-
 }
 
 void loading_data_from_file(){
-    FILE *fptr = fopen("database.txt", "r");
+    FILE *fptr= fopen("database.txt","r");
     if(!fptr){
         perror("\n");
         EXIT_FAILURE;
     }
-
-    for(int z=0; z<USERSIZE; z++){
+    int z=0;
+    for(int z=0; z<USERSIZE; z++) {
         fscanf(fptr, "%d%s%s%s%d%s%d%lf%d",
                &data[z].uId, &data[z].userName, &data[z].email, &data[z].pass,
-               &data[z].phoneNumber, &data[z].address, &data[z].postalCode, &data[z].trans_counter);
+               &data[z].phoneNumber, &data[z].address, &data[z].postalCode,&data[z].amount,&data[z].trans_counter);
         int counter = data[z].trans_counter;
         for(int a=0; a<counter; a++){
             fscanf(fptr,"%s",&data[z].trans[a].transRecord);
 
         }
+        gUserCount++;
         if(data[z].phoneNumber==0){
             break;
         }
-        gUserCount++;
+
     }
 }
 
@@ -422,7 +420,6 @@ void all_data(){
         printf("\n");
 
     }
-
 }
 
 //void retrieve_data(){

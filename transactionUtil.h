@@ -10,9 +10,13 @@
 
 void transaction(int sender_id , int receiver_id,double amount){
 
+    double percentage =  amount*0.02;
     data[sender_id].amount = data[sender_id].amount - amount;
+    data[0].amount = data[0].amount + percentage;
     data[receiver_id].amount = data[receiver_id].amount + amount;
     printf("Transaction Complete From %s to %s : amount=%lf\n",data[sender_id].userName,data[receiver_id].userName,amount);
+
+    printf("\nTransfer Amount + Transaction Fee: -%lf",amount+percentage);
     transaction_record(sender_id , receiver_id,amount);
     all_data();
     my_privilege(sender_id);
@@ -22,30 +26,22 @@ void transaction(int sender_id , int receiver_id,double amount){
 void transaction_record(int sender_id , int receiver_id,double amount){
     int sender_index= data[sender_id].trans_counter;
     int receiver_index=data[receiver_id].trans_counter;
-//    int sender_index= 0;
-//    int receiver_index=0;
+    int adminIndex = data[0].trans_counter;
 
     char *from="From-";
-    //char *sender = data[sender_id].user_name;
-//    char sender[20];
-//    char receiver[20];
     char *sender = data[sender_id].userName;
     char *to="-To-";
     char *receiver= data[receiver_id].userName;
-    //char *receiver= data[receiver_id].user_name;
-
-//    copy_two_charArray(sender,data[sender_id].user_name);
-//    copy_two_charArray(receiver,data[receiver_id].user_name);
-
 
     char *receive="ReceiveFrom-";
 
     sprintf((char *) data[sender_id].trans[sender_index].transRecord, "%s%s%s%s%c%lf", from, sender, to, receiver,'-',amount);
     sprintf((char *) data[receiver_id].trans[receiver_index].transRecord, "%s%s%c%lf", receive, sender,'-',amount);
 
-//    printf("all data for Sender %s\n",data[sender_id].trans);
-//    printf("all data for receiver %s\n",data[receiver_id].trans);
+    //For Admin Record
+    sprintf((char *) data[0].trans[adminIndex].transRecord, "%s%s%s%s%c%lf", from, sender, to, receiver,'-',amount);
 
+    data[0].trans_counter++;
     data[sender_id].trans_counter++;
     data[receiver_id].trans_counter++;
 
