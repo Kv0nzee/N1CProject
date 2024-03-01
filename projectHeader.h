@@ -38,6 +38,10 @@ int gUserCount = 0;
 int gLoginCheck = -1;
 int emailValidation = -1;
 
+typedef  struct {
+    char data[50];
+}Kaung;
+
 //structure declare
 struct to_record{
     char transRecord[200];
