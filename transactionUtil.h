@@ -11,7 +11,7 @@
 void transaction(int sender_id , int receiver_id,double amount){
 
     double percentage =  amount*0.02;
-    data[sender_id].amount = data[sender_id].amount - amount;
+    data[sender_id].amount = data[sender_id].amount - (amount  + percentage);
     data[0].amount = data[0].amount + percentage;
     data[receiver_id].amount = data[receiver_id].amount + amount;
     printf("Transaction Complete From %s to %s : amount=%lf\n",data[sender_id].userName,data[receiver_id].userName,amount);

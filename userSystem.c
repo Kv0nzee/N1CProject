@@ -1,5 +1,6 @@
 #include "projectHeader.h"
 #include "Encryption.h"
+#include "Decryption.h"
 #include "transactionUtil.h"
 #include "validationUtil.h"
 #include "stdio.h"
@@ -32,11 +33,12 @@ int main(){
 //    menu();
 //    SetConsoleTextAttribute(hConsole, saved_attributes);
 
-    char *arr = "abcdefhjijk";
+    char *arr = "kaung zaw hein";
     char *keys = "kzh123";
 
-    Kaung *returnValue = Encryption(arr,keys);
+    struct ct *returnValue = Encryption(arr,keys);
     printf("Our CypherText %s\n",returnValue->data);
-
+    struct ct *decrptedText = Decryption(returnValue, keys);
+    printf("Our Decrypted Text %s\n",decrptedText->data);
     return 0;
 }
