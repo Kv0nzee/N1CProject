@@ -10,6 +10,17 @@ struct avlNode {
 };
 
 void inorder(struct avlNode* root, int depth);
+int getHeight(struct avlNode* node);
+struct avlNode* create(int key);
+int max(int l, int r);
+int getBalanceFactor(struct avlNode* node);
+struct avlNode* leftRotate(struct avlNode* node);
+struct avlNode* rightRotate(struct avlNode* node);
+struct avlNode* insertNode(struct avlNode* root, int key);
+void inorder(struct avlNode* root, int depth);
+struct avlNode* findData(struct avlNode* root, int data);
+struct avlNode* findMin(struct avlNode* root);
+struct avlNode* deleteNode(struct avlNode* root, int key);
 
 int getHeight(struct avlNode* node){
     if(node == NULL){
