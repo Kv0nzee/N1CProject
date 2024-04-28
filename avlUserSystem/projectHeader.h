@@ -64,6 +64,16 @@ void my_privilege(struct Db* user);
 int compare_two_char_array(char first[30],char second[30]);
 int size_of_charArray(char arr[30]);
 void copy_two_charArray(char first[30],char second[30]);
+void user_info_change(struct Db* user);
+void change_username(struct Db* user);
+void change_email(struct Db* user);
+void change_password(struct Db* user);
+void change_phone_number(struct Db* user);
+void change_address(struct Db* user);
+void change_postal_code(struct Db* user);
+void display_user_detail(struct Db* user);
+void storeUserDataToFile(struct Db* user);
+void retrieveUserDataFromFile();
 
 void menu(){
     while(1){
@@ -78,6 +88,7 @@ void menu(){
         }else if(option == 2){
             registration();
         }else if(option == 3){
+            storeUserDataToFile(root);
             printf("\n\n__________Data Recording Complete!___________\n");
             exit(1);
         }else{
@@ -181,30 +192,36 @@ void login(){
 }
 
 void my_privilege(struct Db* user){
-    int mOption = 0;
+    int mOption;
 
-//    if(data[uId].uId<3){
-//        admin_sector(uId);
-//    }else {
+    do {
         printf("Welcome Sir: %s\n", user->userName);
         printf("Your PhoneNumber: %d\n", user->phoneNumber);
 
-        printf("What you want to do!\n");
-        printf("Enter 0 To  Exit:\nEnter 1 to Menu:\nEnter 2 to change user info:\n Enter 3 To transfer money:");
+        printf("What do you want to do?\n");
+        printf("Enter 0 to Exit\nEnter 1 to Return to Menu\nEnter 2 to Change User Info\nEnter 3 to Transfer Money\nEnter 4 to View User Info\n");
         scanf("%d", &mOption);
-        if (mOption == 0) {
-            return;
-        } else if (mOption == 1) {
-            menu();
-        } else if (mOption == 2) {
-//            user_info_change(uId);
-        }else if(mOption==3){
-//            to_transfer_checking(uId);
-        } else {
-            printf("choose from the provided options only\n");
-            my_privilege(user);
+
+        switch (mOption) {
+            case 0:
+                printf("\nSuccessfully logout get back to the menu.\n");
+                return; // Exit the function if option 0 is chosen
+            case 1:
+                menu();
+                break;
+            case 2:
+                user_info_change(user);
+                break;
+            case 3:
+                // to_transfer_checking(uId);
+                break;
+            case 4:
+                display_user_detail(user);
+                break;
+            default:
+                printf("Choose from the provided options only\n");
         }
-//    }
+    } while (1); // Loop continues indefinitely until user chooses to exit
 }
 
 void copy_two_charArray(char first[30],char second[30]){
@@ -252,4 +269,115 @@ int size_of_charArray(char arr[30]){
     return size;
 }
 
+void user_info_change(struct Db* user) {
+    int choice;
+    do {
+        printf("\nChoose what you want to change:\n");
+        printf("1. Username\n");
+        printf("2. Email\n");
+        printf("3. Password\n");
+        printf("4. Phone Number\n");
+        printf("5. Address\n");
+        printf("6. Postal Code\n");
+        printf("7. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                change_username(user);
+                break;
+            case 2:
+                change_email(user);
+                break;
+            case 3:
+                change_password(user);
+                break;
+            case 4:
+                change_phone_number(user);
+                break;
+            case 5:
+                change_address(user);
+                break;
+            case 6:
+                change_postal_code(user);
+                break;
+            case 7:
+                printf("\nExiting user info change.\n");
+                break;
+            default:
+                printf("\nInvalid choice! Please enter a number between 1 and 7.\n");
+                break;
+        }
+    } while (choice != 7);
+}
+
+void change_username(struct Db* user) {
+    char new_username[30];
+    printf("Enter new username: ");
+    scanf(" %[^\n]", new_username);
+    copy_two_charArray(user->userName, new_username);
+    printf("Username changed successfully!\n");
+}
+
+void change_email(struct Db* user) {
+    char new_email[30];
+    printf("Enter new email: ");
+    scanf(" %[^\n]", new_email);
+    // Validate new email
+    if (email_valid(new_email)) {
+        copy_two_charArray(user->email, new_email);
+        printf("Email changed successfully!\n");
+    } else {
+        printf("Invalid email format!\n");
+    }
+}
+
+void change_password(struct Db* user) {
+    char new_password[30];
+    printf("Enter new password: ");
+    scanf(" %[^\n]", new_password);
+    copy_two_charArray(user->pass, new_password);
+    printf("Password changed successfully!\n");
+}
+
+void change_phone_number(struct Db* user) {
+    int new_phone_number;
+    printf("Enter new phone number: ");
+    scanf("%d", &new_phone_number);
+    user->phoneNumber = new_phone_number;
+    printf("Phone number changed successfully!\n");
+}
+
+void change_address(struct Db* user) {
+    char new_address[30];
+    printf("Enter new address: ");
+    scanf(" %[^\n]", new_address);
+    copy_two_charArray(user->address, new_address);
+    printf("Address changed successfully!\n");
+}
+
+void change_postal_code(struct Db* user) {
+    int new_postal_code;
+    printf("Enter new postal code: ");
+    scanf("%d", &new_postal_code);
+    user->postalCode = new_postal_code;
+    printf("Postal code changed successfully!\n");
+}
+
+void display_user_detail(struct Db* user) {
+    printf("User Details:\n");
+    printf("User ID: %d\n", user->uId);
+    printf("Username: %s\n", user->userName);
+    printf("Email: %s\n", user->email);
+    printf("Phone Number: %d\n", user->phoneNumber);
+    printf("Address: %s\n", user->address);
+    printf("Postal Code: %d\n", user->postalCode);
+    printf("Account Balance: %.2f\n", user->amount);
+    printf("Transaction Counter: %d\n", user->trans_counter);
+    printf("Transaction Records:\n");
+    for (int i = 0; i < user->trans_counter; ++i) {
+        printf("%d. %s\n", i+1, user->trans[i].transRecord);
+    }
+}
 #endif //C_PROGRAMMING_PROJECTHEADER_H

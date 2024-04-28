@@ -1,6 +1,7 @@
 #include "projectHeader.h"
 #include "avltree.h"
 #include "validationUtil.h"
+#include "storeandretrieve.h"
 #include "stdio.h"
 #include "windows.h"
 
@@ -18,6 +19,7 @@ int main(){
     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
 //    char first[30]={'a','b','c','d'};
 
+    retrieveUserDataFromFile();
     printf( "Welcome to our Program!\n");
     //SetConsoleTextAttribute(hConsole, saved_attributes);
     SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
