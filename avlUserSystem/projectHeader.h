@@ -75,6 +75,10 @@ void display_user_detail(struct Db* user);
 void storeUserDataToFile(struct Db* user);
 void retrieveUserDataFromFile();
 
+void transaction(struct Db* sender, struct Db* receiver, double amount);
+void transaction_record(struct Db* sender, struct Db* receiver, double amount);
+void to_transfer_checking(struct Db* sender);
+
 void menu(){
     while(1){
         int option = 0;
@@ -164,7 +168,7 @@ struct Db* searchUserByEmail(struct Db* root, const char* email) {
     if (strcmp(root->email, email) == 0)
         return root;
 
-    struct Db** leftResult = searchUserByEmail(root->left, email);
+    struct Db* leftResult = searchUserByEmail(root->left, email);
     if (leftResult != NULL) return leftResult;
 
     return searchUserByEmail(root->right, email);
@@ -213,7 +217,7 @@ void my_privilege(struct Db* user){
                 user_info_change(user);
                 break;
             case 3:
-                // to_transfer_checking(uId);
+                to_transfer_checking(user);
                 break;
             case 4:
                 display_user_detail(user);

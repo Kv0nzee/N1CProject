@@ -2,6 +2,7 @@
 #include "avltree.h"
 #include "validationUtil.h"
 #include "storeandretrieve.h"
+#include "transactionUtil.h"
 #include "stdio.h"
 #include "windows.h"
 
